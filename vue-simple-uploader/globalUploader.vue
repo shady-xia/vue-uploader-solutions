@@ -44,6 +44,13 @@
 </template>
 
 <script>
+    /**
+     *   全局上传插件
+     *   调用方法：Bus.$emit('openUploader', {}) 打开文件选择框，参数为需要传递的额外参数
+     *   监听函数：Bus.$on('fileAdded', fn); 文件选择后的回调
+     *            Bus.$on('fileSuccess', fn); 文件上传成功的回调
+     */
+
     import {ACCEPT_CONFIG} from './js/config';
     import Bus from './js/bus';
     import SparkMD5 from 'spark-md5';
@@ -102,7 +109,9 @@
         },
         methods: {
             onFileAdded(file) {
+                Bus.$emit('fileAdded');
                 this.panelShow = true;
+
                 this.computeMD5(file);
             },
             onFileProgress(rootFile, file, chunk) {

@@ -9,13 +9,19 @@
     import Bus from '@/assets/js/bus';
 
     export default {
+        components: {},
         data() {
             return {}
         },
         mounted() {
-            // 文化上传成功的回调
-            Bus.$on('fileSuccess', data => {
-                console.log(data)
+            // 文件选择后的回调
+            Bus.$on('fileAdded', () => {
+                console.log('文件已选择')
+            });
+
+            // 文件上传成功的回调
+            Bus.$on('fileSuccess', () => {
+                console.log('文件上传成功')
             });
         },
         computed: {},
@@ -27,8 +33,10 @@
                 })
             }
         },
-        watch: {},
-        components: {}
+        destroyed() {
+            Bus.$off('fileAdded');
+            Bus.$off('fileSuccess');
+        },
     }
 </script>
 
