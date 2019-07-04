@@ -80,8 +80,7 @@
                     headers: {
                         Authorization: Ticket.get() && "Bearer " + Ticket.get().access_token
                     },
-                    query() {
-                    }
+                    query() {}
                 },
                 attrs: {
                     accept: ACCEPT_CONFIG.getAll()
@@ -89,9 +88,7 @@
                 panelShow: false,   //选择文件后，展示上传panel
                 collapse: false,
             }
-        },
-        created() {
-        },
+        },   
         mounted() {
             Bus.$on('openUploader', query => {
                 this.params = query || {};
@@ -109,10 +106,10 @@
         },
         methods: {
             onFileAdded(file) {
-                Bus.$emit('fileAdded');
                 this.panelShow = true;
-
                 this.computeMD5(file);
+
+                Bus.$emit('fileAdded');
             },
             onFileProgress(rootFile, file, chunk) {
                 console.log(`上传中 ${file.name}，chunk：${chunk.startByte / 1024 / 1024} ~ ${chunk.endByte / 1024 / 1024}`)
@@ -120,14 +117,19 @@
             onFileSuccess(rootFile, file, response, chunk) {
                 let res = JSON.parse(response);
 
-                // 服务器自定义的错误，这种错误是Uploader无法拦截的
+                // 服务器自定义的错误（即虽返回200，但是是错误的情况），这种错误是Uploader无法拦截的
                 if (!res.result) {
                     this.$message({ message: res.message, type: 'error' });
+                    // 文件状态设为“失败”
+                    this.statusSet(file.id, 'failed');
                     return
                 }
 
                 // 如果服务端返回需要合并
                 if (res.needMerge) {
+                    // 文件状态设为“合并中”
+                    this.statusSet(file.id, 'merging');
+
                     api.mergeSimpleUpload({
                         tempName: res.tempName,
                         fileName: file.name,
@@ -135,6 +137,8 @@
                     }).then(res => {
                         // 文件合并成功
                         Bus.$emit('fileSuccess');
+
+                        this.statusRemove(file.id);
                     }).catch(e => {});
 
                 // 不需要合并
@@ -157,34 +161,60 @@
             computeMD5(file) {
                 let fileReader = new FileReader();
                 let time = new Date().getTime();
-                let md5 = '';
+                let blobSlice = File.prototype.slice || File.prototype.mozSlice || File.prototype.webkitSlice;
+                let currentChunk = 0;
+                const chunkSize = 10 * 1024 * 1000;
+                let chunks = Math.ceil(file.size / chunkSize);
+                let spark = new SparkMD5.ArrayBuffer();
 
+                // 文件状态设为"计算MD5"
+                this.statusSet(file.id, 'md5');
                 file.pause();
 
-                fileReader.readAsArrayBuffer(file.file);
+                loadNext();
 
                 fileReader.onload = (e => {
-                    if (file.size != e.target.result.byteLength) {
-                        this.error('Browser reported success but could not read the file until the end.');
-                        return
+                    spark.append(e.target.result);
+
+                    if (currentChunk < chunks) {
+                        currentChunk++;
+                        loadNext();
+
+                        // 实时展示MD5的计算进度
+                        this.$nextTick(() => {
+                            $(`.myStatus_${file.id}`).text(this.$t('res.checkMD5') +' '+ ((currentChunk/chunks)*100).toFixed(0)+'%')
+                        })
+                    } else {
+                        let md5 = spark.end();
+                        this.computeMD5Success(md5, file);
+                        console.log(`MD5计算完毕：${file.name} \nMD5：${md5} \n分片：${chunks} 大小:${file.size} 用时：${new Date().getTime() - time} ms`);
                     }
-
-                    md5 = SparkMD5.ArrayBuffer.hash(e.target.result);
-
-                    // 添加额外的参数
-                    this.uploader.opts.query = {
-                        ...this.params
-                    }
-
-                    console.log(`MD5计算完毕：${file.id} ${file.name} MD5：${md5} 用时：${new Date().getTime() - time} ms`);
-
-                    file.uniqueIdentifier = md5;
-                    file.resume();
                 });
 
                 fileReader.onerror = function () {
-                    this.error('FileReader onerror was triggered, maybe the browser aborted due to high memory usage.');
+                    this.error(`文件${file.name}读取出错，请检查该文件`)
+                    file.cancel();
                 };
+
+                function loadNext() {
+                    let start = currentChunk * chunkSize;
+                    let end = ((start + chunkSize) >= file.size) ? file.size : start + chunkSize;
+
+                    fileReader.readAsArrayBuffer(blobSlice.call(file.file, start, end));
+                }
+            },
+
+            computeMD5Success(md5, file) {
+                // 将自定义参数直接加载uploader实例的opts上
+                Object.assign(this.uploader.opts, {
+                    query: {
+                        ...this.params,
+                    }
+                })
+
+                file.uniqueIdentifier = md5;
+                file.resume();
+                this.statusRemove(file.id);
             },
 
             fileListShow() {
@@ -202,6 +232,49 @@
                 this.uploader.cancel();
 
                 this.panelShow = false;
+            },
+
+            /**
+             * 新增的自定义的状态: 'md5'、'transcoding'、'failed'
+             * @param id
+             * @param status
+             */
+            statusSet(id, status) {
+                let statusMap = {
+                    md5: {
+                        text: '校验MD5',
+                        bgc: '#fff'
+                    },
+                    merging: {
+                        text: '合并中',
+                        bgc: '#e2eeff'
+                    },
+                    transcoding: {
+                        text: '转码中',
+                        bgc: '#e2eeff'
+                    },
+                    failed: {
+                        text: '上传失败',
+                        bgc: '#e2eeff'
+                    }
+                }
+
+                this.$nextTick(() => {
+                    $(`<p class="myStatus_${id}"></p>`).appendTo(`.file_${id} .uploader-file-status`).css({
+                        'position': 'absolute',
+                        'top': '0',
+                        'left': '0',
+                        'right': '0',
+                        'bottom': '0',
+                        'zIndex': '1',
+                        'backgroundColor': statusMap[status].bgc
+                    }).text(statusMap[status].text);
+                })
+            },
+            statusRemove(id) {
+                this.$nextTick(() => {
+                    $(`.myStatus_${id}`).remove();
+                })
             },
 
             error(msg) {
