@@ -182,7 +182,7 @@
 
                         // 实时展示MD5的计算进度
                         this.$nextTick(() => {
-                            $(`.myStatus_${file.id}`).text(this.$t('res.checkMD5') +' '+ ((currentChunk/chunks)*100).toFixed(0)+'%')
+                            $(`.myStatus_${file.id}`).text('校验MD5 '+ ((currentChunk/chunks)*100).toFixed(0)+'%')
                         })
                     } else {
                         let md5 = spark.end();
@@ -279,7 +279,7 @@
 
             error(msg) {
                 this.$notify({
-                    title: this.$t('c.false'),
+                    title: '错误',
                     message: msg,
                     type: 'error',
                     duration: 2000
