@@ -80,13 +80,18 @@
                     headers: {
                         Authorization: Ticket.get() && "Bearer " + Ticket.get().access_token
                     },
-                    query() {}
+                    query: (file, chunk) => {
+                        return {
+                            ...file.params,
+                        }
+                    },
                 },
                 attrs: {
                     accept: ACCEPT_CONFIG.getAll()
                 },
                 panelShow: false,   //选择文件后，展示上传panel
                 collapse: false,
+                params: {},
             }
         },   
         mounted() {
@@ -108,6 +113,9 @@
             onFileAdded(file) {
                 this.panelShow = true;
                 this.computeMD5(file);
+
+                // 2022/1/10 将额外的参数赋值到每个文件上，解决了不同文件使用不同params的需求
+                file.params = this.params
 
                 Bus.$emit('fileAdded');
             },
@@ -133,7 +141,7 @@
                     api.mergeSimpleUpload({
                         tempName: res.tempName,
                         fileName: file.name,
-                        ...this.params,
+                        ...file.params,
                     }).then(res => {
                         // 文件合并成功
                         Bus.$emit('fileSuccess');
@@ -205,13 +213,6 @@
             },
 
             computeMD5Success(md5, file) {
-                // 将自定义参数直接加载uploader实例的opts上
-                Object.assign(this.uploader.opts, {
-                    query: {
-                        ...this.params,
-                    }
-                })
-
                 file.uniqueIdentifier = md5;
                 file.resume();
                 this.statusRemove(file.id);
