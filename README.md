@@ -1,18 +1,21 @@
-# Blog
-博客上相关的代码
+# Vue uploader solutions
 
-平常写的博客上面的代码可以在这里找到。
+Vue上传的解决方案
 
-http://www.cnblogs.com/xiahj/
+之前根据项目需要，封装了vue上传插件，并写了对应的文章，看大家的讨论度还挺高的，决定完善该项目，更细致地帮助大家
 
-http://www.mshady.com/
-
-最近会把之前的笔记陆续的整理，平常项目中用到的技术，遇到的困难也会总结下来，写一些比较有质量的文章。敬请关注~
-
-# vue-simple-uploader
+## vue-simple-uploader
 
 基于vue-simple-uploader封装文件分片上传、秒传及断点续传的全局上传插件
 
 文章地址：https://www.cnblogs.com/xiahj/p/vue-simple-uploader.html
 
 源码：https://github.com/shady-xia/Blog/tree/master/vue-simple-uploader
+
+## vue-webuploader（已不推荐）
+
+Vue2.0结合webuploader实现文件分片上传
+
+文章地址：https://www.cnblogs.com/xiahj/p/8529545.html
+
+源码：https://github.com/shady-xia/vue-uploader-solutions/tree/master/vue-webuploader
