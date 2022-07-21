@@ -1,21 +1,26 @@
 # Vue uploader solutions
 
-Vue上传的解决方案
+Vue上传的解决方案，目前主要处理 vue-simple-uploader，基于 vue-simple-uploader 封装了可以分片、秒传及断点续传的上传插件
 
-之前根据项目需要，封装了vue上传插件，并写了对应的文章，看大家的讨论度还挺高的，决定完善该项目，更细致地帮助大家
+## 文章地址
 
-## vue-simple-uploader
+[基于vue-simple-uploader封装文件分片上传、秒传及断点续传的全局上传插件](https://www.cnblogs.com/xiahj/p/vue-simple-uploader.html)
 
-基于vue-simple-uploader封装文件分片上传、秒传及断点续传的全局上传插件
+## 常见问题汇总
 
-文章地址：https://www.cnblogs.com/xiahj/p/vue-simple-uploader.html
+[vue-simple-uploader 常见问题整理](https://www.cnblogs.com/xiahj/p/15950975.html)
 
-源码：https://github.com/shady-xia/Blog/tree/master/vue-simple-uploader
+## 预览
+
+## 本地调试
+
+## TODO
+
+* [ ] 预览功能
+* [ ] 完善readme
+* [ ] node.js服务端
 
 ## vue-webuploader（已不推荐）
 
-Vue2.0结合webuploader实现文件分片上传
-
-文章地址：https://www.cnblogs.com/xiahj/p/8529545.html
-
-源码：https://github.com/shady-xia/vue-uploader-solutions/tree/master/vue-webuploader
+见文章：
+[Vue2.0结合webuploader实现文件分片上传](https://www.cnblogs.com/xiahj/p/8529545.html)
