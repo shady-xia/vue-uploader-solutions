@@ -9,7 +9,7 @@
           :default-active="activeRoute"
           router
         >
-          <el-menu-item index="/">vue-simple-uploader</el-menu-item>
+          <el-menu-item index="/home">vue-simple-uploader</el-menu-item>
           <el-menu-item index="/about">关于</el-menu-item>
         </el-menu>
         <div class="app-nav-title">Vue Uploader Solutions</div>
@@ -28,7 +28,7 @@
 </template>
 
 <script>
-import GlobalUploader from '../vue-simple-uploader/GlobalUploader'
+import GlobalUploader from '/vue-simple-uploader/GlobalUploader'
 
 export default {
   name: 'app',
@@ -37,7 +37,7 @@ export default {
   },
   data() {
     return {
-      activeRoute: '/'
+      activeRoute: ''
     }
   },
   watch: {
