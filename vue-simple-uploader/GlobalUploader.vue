@@ -1,9 +1,9 @@
 <template>
-  <div id="global-uploader">
+  <div id="global-uploader" :class="{'global-uploader-single': !global}">
     <!-- 上传 -->
     <uploader
       ref="uploader"
-      :options="options"
+      :options="initOptions"
       :fileStatusText="fileStatusText"
       :autoStart="false"
       @file-added="onFileAdded"
@@ -59,14 +59,16 @@
 
 <script>
 /**
- *  全局上传插件
- *
+ *  全局上传插件，两种调用方式
+ *   1. 作为全局页面的组件，使用event bus
  *   调用方法：Bus.$emit('openUploader', {params: {}, options: {}})
  *               params: 发送给服务器的额外参数；
  *               options：上传选项，目前支持 target、testChunks、mergeFn、accept
  *
  *   监听函数：Bus.$on('fileAdded', fn); 文件选择后的回调
  *           Bus.$on('fileSuccess', fn); 文件上传成功的回调，监听后记得释放
+ *
+ *   2. 作为普通组件在单个页面中调用，使用props
  */
 import { ACCEPT_CONFIG } from './js/config'
 import Bus from './js/bus'
@@ -74,9 +76,23 @@ import SparkMD5 from 'spark-md5'
 import { mergeSimpleUpload } from '@/api'
 
 export default {
+  props: {
+    global: {
+      type: Boolean,
+      default: false
+    },
+    // 发送给服务器的额外参数
+    params: {
+      type: Object
+    },
+    options: {
+      type: Object
+    }
+  },
+
   data() {
     return {
-      options: {
+      initOptions: {
         target: '',
         chunkSize: '2048000',
         fileParameterName: 'upfile',
@@ -107,13 +123,30 @@ export default {
       },
       panelShow: false, //选择文件后，展示上传panel
       collapse: false,
-      params: {}
+      customParams: {}
+    }
+  },
+
+  watch: {
+    params: {
+      handler(data) {
+        this.customParams = data
+      },
+      immediate: true
+    },
+    options: {
+      handler(data) {
+        setTimeout(() => {
+            this.customizeOptions(data)
+        }, 0)
+      },
+      immediate: true
     }
   },
 
   mounted() {
     Bus.$on('openUploader', ({params={}, options={}}) => {
-      this.params = params
+      this.customParams = params
 
       this.customizeOptions(options)
 
@@ -154,10 +187,10 @@ export default {
 
     onFileAdded(file) {
       this.panelShow = true
-      Bus.$emit('fileAdded')
+      this.emit('fileAdded')
 
       // 将额外的参数赋值到每个文件上，以不同文件使用不同params的需求
-      file.params = this.params
+      file.params = this.customParams
 
       // 计算MD5
       this.computeMD5(file).then((result) => this.startUpload(result))
@@ -261,7 +294,7 @@ export default {
         })
           .then((res) => {
             // 文件合并成功
-            Bus.$emit('fileSuccess')
+            this.emit('fileSuccess')
 
             this.statusRemove(file.id)
           })
@@ -269,7 +302,7 @@ export default {
 
         // 不需要合并
       } else {
-        Bus.$emit('fileSuccess')
+        this.emit('fileSuccess')
         console.log('上传成功')
       }
     },
@@ -335,6 +368,11 @@ export default {
       })
     },
 
+    emit(e) {
+      Bus.$emit(e)
+      this.$emit(e)
+    },
+
     error(msg) {
       this.$notify({
         title: '错误',
@@ -349,11 +387,13 @@ export default {
 
 <style lang="scss">
 #global-uploader {
-  position: fixed;
-  z-index: 20;
-  right: 15px;
-  bottom: 15px;
-  box-sizing: border-box;
+  &:not(.global-uploader-single) {
+    position: fixed;
+    z-index: 20;
+    right: 15px;
+    bottom: 15px;
+    box-sizing: border-box;
+  }
 
   .uploader-app {
     width: 520px;
@@ -455,5 +495,11 @@ export default {
 #global-uploader-btn {
   position: absolute;
   clip: rect(0, 0, 0, 0);
+}
+
+.global-uploader-single {
+  #global-uploader-btn {
+    position: relative;
+  }
 }
 </style>

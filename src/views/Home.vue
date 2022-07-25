@@ -23,6 +23,8 @@
 import Bus from '/vue-simple-uploader/js/bus'
 
 export default {
+  name: 'home',
+
   data() {
     return {
       fileList: []
