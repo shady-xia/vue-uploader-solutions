@@ -7,6 +7,7 @@
     "start": "npm run serve",
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
+    "preview": "serve docs -s",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
@@ -27,9 +28,10 @@
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-vue": "^8.0.3",
-    "prettier": "^2.4.1",
     "node-sass": "^4.12.0",
+    "prettier": "^2.4.1",
     "sass-loader": "^8.0.2",
+    "serve": "^11.3.2",
     "vue-template-compiler": "^2.6.14"
   }
 }

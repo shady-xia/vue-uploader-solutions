@@ -9,14 +9,18 @@
       <!-- todo 已上传的文件列表 -->
 
       <div class="empty" v-if="!fileList.length">
-        <el-empty description="暂无文件，请先上传"></el-empty>
+        <el-empty>
+          <template #description>
+            <p>暂无文件，请先<a class="upload" @click="upload">上传</a></p>
+          </template>
+        </el-empty>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import Bus from '../../vue-simple-uploader/js/bus'
+import Bus from '/vue-simple-uploader/js/bus'
 
 export default {
   data() {
@@ -79,6 +83,11 @@ export default {
     top: 45%;
     left: 50%;
     transform: translate(-50%, -50%);
+
+    .upload {
+      color: #1989fa;
+      cursor: pointer;
+    }
   }
 }
 </style>

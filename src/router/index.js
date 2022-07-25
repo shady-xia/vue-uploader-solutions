@@ -9,6 +9,10 @@ export default new Router({
   routes: [
     {
       path: '/',
+      redirect: '/home'
+    },
+    {
+      path: '/home',
       name: 'home',
       component: () => import('../views/Home.vue')
     },
@@ -16,6 +20,10 @@ export default new Router({
       path: '/about',
       name: 'about',
       component: () => import('../views/About.vue')
+    },
+    {
+      path: '*',
+      redirect: '/'
     }
   ]
 })
