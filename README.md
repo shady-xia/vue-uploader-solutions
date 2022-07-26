@@ -35,14 +35,14 @@ npm run serve
 
 作为全局上传组件使用时，将组件注册在`App.vue`中，通过 `Event Bus` 的方式调用插件。
 
-使用场景为：上传器为整个网站级别的，切换路由时不打断上传流程，即上传窗口始终存在。
+使用场景为：上传器为整个网站级别的，切换路由时不打断上传流程，上传窗口始终存在于网站右下角。
 
 **打开上传器**
 
 调用`Bus.$emit('openUploader')`，打开上传器，弹出选择文件窗口，该函数有两个参数：
 
-* **params**：传给服务端的额外参数
-* **options**：上传选项，目前支持 target、testChunks、mergeFn、accept
+* params：传给服务端的额外参数
+* options：上传选项，目前支持 target、testChunks、mergeFn、accept
 
 ```js
 Bus.$emit('openUploader', {
@@ -74,10 +74,12 @@ Bus.$on('fileSuccess', () => {
 
 ### 作为普通组件在单个页面中使用
 
+使用场景为：在单个页面中使用上传器
+
 props：
-* **global**：请务必设置为 `false`，代表非全局
-* **params**：（同用法一）传给服务端的额外参数
-* **options**：（同用法一）上传选项，目前支持 target、testChunks、mergeFn、accept
+* global：请务必设置为 `false`，代表非全局
+* params：（同用法一）传给服务端的额外参数
+* options：（同用法一）上传选项，目前支持 target、testChunks、mergeFn、accept
 
 events:
 * fileAdded：文件选择后的回调
@@ -105,3 +107,10 @@ events:
 
 见文章：
 [Vue2.0结合webuploader实现文件分片上传](https://www.cnblogs.com/xiahj/p/8529545.html)
+
+## License
+
+请捍卫自己作为劳动者的权利
+
+[![LICENSE](https://img.shields.io/badge/license-Anti%20996-blue.svg)](https://github.com/996icu/996.ICU/blob/master/LICENSE)
+[![996.icu](https://img.shields.io/badge/link-996.icu-red.svg)](https://996.icu)
