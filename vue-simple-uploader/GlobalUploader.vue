@@ -79,7 +79,7 @@ export default {
   props: {
     global: {
       type: Boolean,
-      default: false
+      default: true
     },
     // 发送给服务器的额外参数
     params: {
