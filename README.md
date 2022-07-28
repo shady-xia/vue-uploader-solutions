@@ -16,12 +16,26 @@ Vue上传的解决方案
 
 ## 本地调试
 
-前端服务：
+**前端服务**：
 ```bash
+npm install
+
 npm start
 # or
 npm run serve
 ```
+
+前端服务默认打开8080端口
+
+**node服务端**
+
+```bash
+cd server
+npm install
+npm run server
+```
+
+node服务会打开3000端口，临时文件存在 tmp 目录下，上传成功的文件存在 uploads 目录下
 
 ## 插件的封装及使用
 
@@ -93,13 +107,6 @@ events:
     @fileAdded="fileAdded"
  />
 ```
-
-## TODO
-
-* [x] 重构项目
-* [x] 优化GlobalUploader组件
-* [x] 预览功能
-* [ ] node.js服务端
 
 ## 其他上传器
 

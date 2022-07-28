@@ -79,7 +79,7 @@ export default {
   props: {
     global: {
       type: Boolean,
-      default: false
+      default: true
     },
     // 发送给服务器的额外参数
     params: {
@@ -93,20 +93,26 @@ export default {
   data() {
     return {
       initOptions: {
-        target: '',
+        target: 'http://localhost:3000/upload',
         chunkSize: '2048000',
-        fileParameterName: 'upfile',
+        fileParameterName: 'file',
         maxChunkRetries: 3,
         // 是否开启服务器分片校验
         testChunks: true,
         // 服务器分片校验函数，秒传及断点续传基础
         checkChunkUploadedByResponse: function (chunk, message) {
-          let objMessage = JSON.parse(message)
-          if (objMessage.skipUpload) {
-            return true
-          }
+          let skip = false
 
-          return (objMessage.uploaded || []).indexOf(chunk.offset + 1) >= 0
+          try {
+            let objMessage = JSON.parse(message)
+            if (objMessage.skipUpload) {
+              skip = true
+            } else {
+              skip = (objMessage.uploaded || []).indexOf(chunk.offset + 1) >= 0
+            }
+          } catch (e) {}
+
+          return skip
         },
         query: (file, chunk) => {
           return {
@@ -130,15 +136,19 @@ export default {
   watch: {
     params: {
       handler(data) {
-        this.customParams = data
+        if (data) {
+          this.customParams = data
+        }
       },
       immediate: true
     },
     options: {
       handler(data) {
-        setTimeout(() => {
+        if (data) {
+          setTimeout(() => {
             this.customizeOptions(data)
-        }, 0)
+          }, 0)
+        }
       },
       immediate: true
     }
