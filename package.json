@@ -1,11 +1,11 @@
 {
-  "name": "vue-uploader-soultions",
-  "version": "0.1.0",
+  "name": "vue-uploader-solutions",
+  "version": "1.0.0",
   "description": "",
   "author": "shady-xia",
   "scripts": {
-    "start": "npm run serve",
-    "serve": "vue-cli-service serve",
+    "start": "npm run dev",
+    "dev": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "preview": "serve docs -s",
     "lint": "vue-cli-service lint"
