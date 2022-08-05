@@ -6,6 +6,8 @@ Vue上传的解决方案
 
 预览：[https://shady-xia.github.io/vue-uploader-solutions](https://shady-xia.github.io/vue-uploader-solutions)
 
+基于vue3的版本：[https://github.com/shady-xia/vue-uploader-solutions-next](https://github.com/shady-xia/vue-uploader-solutions-next)
+
 ## 文章
 
 该仓库有对应的文章进行分析：
