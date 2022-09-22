@@ -37,11 +37,10 @@
           <ul class="file-list">
             <li
               class="file-item"
-              :class="`file-${file.id}`"
               v-for="file in props.fileList"
               :key="file.id">
               <uploader-file
-                :class="'file_' + file.id"
+                :class="['file_' + file.id, customStatus]"
                 ref="files"
                 :file="file"
                 :list="true"
@@ -129,7 +128,8 @@ export default {
       },
       panelShow: false, //选择文件后，展示上传panel
       collapse: false,
-      customParams: {}
+      customParams: {},
+      customStatus: ''
     }
   },
 
@@ -223,11 +223,6 @@ export default {
       // 文件状态设为"计算MD5"
       this.statusSet(file.id, 'md5')
       file.pause()
-
-      // 计算MD5时隐藏”开始“按钮
-      this.$nextTick(() => {
-        document.querySelector(`.file-${file.id} .uploader-file-resume`).style.display = 'none'
-      })
 
       loadNext()
 
@@ -360,6 +355,7 @@ export default {
         }
       }
 
+      this.customStatus = status
       this.$nextTick(() => {
         const statusTag = document.createElement('p')
         statusTag.className = `custom-status-${id} custom-status`
@@ -372,6 +368,7 @@ export default {
     },
 
     statusRemove(id) {
+      this.customStatus = ''
       this.$nextTick(() => {
         const statusTag = document.querySelector(`.custom-status-${id}`)
         statusTag.remove()
@@ -461,6 +458,14 @@ export default {
     left: 50%;
     transform: translate(-50%, -50%);
     font-size: 16px;
+  }
+
+  .uploader-file {
+    &.md5 {
+      .uploader-file-resume {
+        display: none;
+      }
+    }
   }
 
   .uploader-file-icon {
